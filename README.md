@@ -1,7 +1,7 @@
 
 # Zinvest-trade-api-python
 
-`zinvest-trade-api-python` 尊嘉证券行情API，用户可以订阅港股、美股、A股实时行情，包含买卖10档盘口与最新价。说明文档：(https://www.zvsts.com/api).
+`zinvest-trade-api-python` 尊嘉证券行情API，用户可以订阅港股、美股实时行情，包含买卖10档盘口与最新价。说明文档：(https://www.zvsts.com/api).
 
 同时尊嘉证券提供免费实时的RESTful交易API。编程语言不限于Python/JS/JAVA/C++/Go等。说明文档：(https://www.zvsts.com/api).
 
@@ -31,7 +31,7 @@ pip install -r requirements.txt
 * 数据:
   * [实时行情订阅](https://www.zvsts.com/api)
   
-## 怎样订阅实时港股、美股、A股行情
+## 怎样订阅实时港股、美股行情
 ### 实时行情包含如下类型：
 * Quotes (https://www.zvsts.com/api)
 * Snapshots (https://www.zvsts.com/api)
