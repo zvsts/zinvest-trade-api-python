@@ -70,7 +70,7 @@ def get_data_url() -> URL:
 def get_data_stream_url() -> URL:
     return URL(os.environ.get(
         'ZVST_API_STREAM_URL',
-        'wss://mdpush.investassistant.com/marketdata/push').rstrip('/')
+        'wss://mdpush1.investassistant.com/marketdata/push').rstrip('/')
                )
 
 

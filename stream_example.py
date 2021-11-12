@@ -13,7 +13,7 @@ async def print_snapshots(s):
 def main():
     logging.basicConfig(level=logging.INFO)
     stream = Stream(key_id='test', secret_key='test')
-    stream.subscribe_quotes(print_quote, 'HKEX_00700', 'HKEX_03690')
+    stream.subscribe_quotes(print_quote, 'HKEX_00700', 'HKEX_03690', "US_DIDI")
     stream.subscribe_snapshots(print_snapshots, 'HKEX_00700')
     stream.run()
 

@@ -24,8 +24,6 @@ def _ensure_coroutine(handler):
 
 
 def convert(data):
-    if isinstance(data, str):
-        return json.loads(data)
     if isinstance(data, bytes):
         return data.decode('ascii')
     if isinstance(data, dict):
@@ -66,15 +64,19 @@ class _DataStream():
         self._should_run = True
 
     async def _connect(self):
-        self._ws = await websockets.connect(
-            self._endpoint,
-            extra_headers={'Content-Type': 'application/msgpack'})
-        r = await self._ws.recv()
-        msg = msgpack.unpackb(r)
-        msg = convert(msg)
-        msg = convertToObj(msg)
-        if msg[0]['T'] != 'success' or msg[0]['msg'] != 'connected':
-            raise ValueError('connected message not received')
+        try:
+            self._ws = await websockets.connect(
+                self._endpoint,
+                extra_headers={'Content-Type': 'application/msgpack'})
+            r = await self._ws.recv()
+            msg = msgpack.unpackb(r)
+            # msg = convert(msg)
+            # msg = convertToObj(msg)
+            if msg[0]['T'] != 'success' or msg[0]['msg'] != 'connected':
+                raise ValueError('connected message not received')
+        except:
+            log.error(f'connected failed ，waiting 1 seconds to reconnect.')
+            await asyncio.sleep(1)
 
     async def _auth(self):
         await self._ws.send(
@@ -85,8 +87,8 @@ class _DataStream():
             }))
         r = await self._ws.recv()
         msg = msgpack.unpackb(r)
-        msg = convert(msg)
-        msg = convertToObj(msg)
+        # msg = convert(msg)
+        # msg = convertToObj(msg)
         if msg[0]['T'] == 'error':
             raise ValueError(msg[0].get('msg', 'auth failed'))
         if msg[0]['T'] != 'success' or msg[0]['msg'] != 'authenticated':
@@ -94,8 +96,9 @@ class _DataStream():
 
     async def _start_ws(self):
         await self._connect()
-        await self._auth()
-        log.info(f'connected to: {self._endpoint}')
+        if self._ws:
+            await self._auth()
+            log.info(f'connected to: {self._endpoint}')
 
     async def close(self):
         if self._ws:
@@ -118,8 +121,8 @@ class _DataStream():
                 try:
                     r = await asyncio.wait_for(self._ws.recv(), 5)
                     msgs = msgpack.unpackb(r)
-                    msgs = convert(msgs)
-                    msgs = convertToObj(msgs)
+                    # msgs = convert(msgs)
+                    # msgs = convertToObj(msgs)
                     for msg in msgs:
                         await self._dispatch(msg)
                 except asyncio.TimeoutError:
@@ -226,9 +229,10 @@ class _DataStream():
                     log.info("starting {} websocket connection".format(
                         self._name))
                     await self._start_ws()
-                    await self._subscribe_all()
-                    self._running = True
-                await self._consume()
+                    if self._ws:
+                        await self._subscribe_all()
+                        self._running = True
+                        await self._consume()
             except websockets.WebSocketException as wse:
                 await self.close()
                 self._running = False
@@ -373,11 +377,9 @@ class Stream:
     def __init__(self,
                  key_id: str = None,
                  secret_key: str = None,
-                 base_url: URL = None,
                  data_stream_url: URL = None,
                  raw_data: bool = True):
         self._key_id, self._secret_key, _ = get_credentials(key_id, secret_key)
-        self._base_url = base_url or get_base_url()
         self._data_steam_url = data_stream_url or get_data_stream_url()
 
         self._data_ws = DataStream(self._key_id,
