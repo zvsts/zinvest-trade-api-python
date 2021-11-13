@@ -74,7 +74,8 @@ class _DataStream():
             # msg = convertToObj(msg)
             if msg[0]['T'] != 'success' or msg[0]['msg'] != 'connected':
                 raise ValueError('connected message not received')
-        except:
+        except Exception as e:
+            log.error('connected error ', e)
             log.error(f'connected failed ，waiting 1 seconds to reconnect.')
             await asyncio.sleep(1)
 

@@ -6,7 +6,12 @@
 同时尊嘉证券提供免费实时的RESTful交易API。编程语言不限于Python/JS/JAVA/C++/Go等。说明文档：(https://www.zvsts.com/api).
 
 ## 安装 
-Python 环境：python>=3.6
+Python 环境：python>=3.6 and python <= 3.9
+### 从pip库一键安装：
+```bash
+pip install zinvest-trade-api
+```
+### 下载源代码安装
 一键安装以下依赖包：pip install -r requirements.txt 
 ```
 python-dateutil==2.8.1
